@@ -17,6 +17,7 @@ datasource db {
 model User {
   id        String    @id @default(cuid())
   name      String
+  password  String
   email     String    @unique
   image     String?   // プロフィール画像のURL
   bio       String?   @db.Text
