@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ユーザー
+model User {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  image     String?   // プロフィール画像のURL
+  bio       String?   @db.Text
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  posts     Post[]      // ユーザーの投稿 (一対多)
+  comments  Comment[]   // ユーザーのコメント (一対多)
+  likes     Like[]      // ユーザーのいいね (一対多)
+}
+
+// 投稿
+model Post {
+  id        String    @id @default(cuid())
+  content   String    @db.Text
+  imageUrl  String?   // 投稿画像のURL
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  authorId  String
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  comments  Comment[] // 投稿へのコメント (一対多)
+  likes     Like[]    // 投稿へのいいね (一対多)
+
+  @@index([authorId])
+}
+
+// コメント
+model Comment {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([authorId])
+  @@index([postId])
+}
+
+// いいね
+model Like {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  // 同じユーザーが同じ投稿に複数回いいねできないようにするための複合ユニーク制約
+  @@unique([userId, postId])
+  @@index([userId])
+  @@index([postId])
+}
