@@ -6,14 +6,10 @@ import { PrismaClient, type User } from "@prisma/client";
 import { sign, verify } from "hono/jwt";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import { handle } from "hono/vercel";
-
-type Bindings = {
-	ACCESS_TOKEN_SECRET: string;
-	REFRESH_TOKEN_SECRET: string;
-};
+import type { HonoEnv } from "@/lib/hono";
 
 const prisma = new PrismaClient();
-const app = new Hono<{ Bindings: Bindings }>().basePath("/api/auth");
+const app = new Hono<HonoEnv>().basePath("/api/auth");
 
 const cookieOptions = {
 	httpOnly: true,
