@@ -11,7 +11,7 @@ const app = new Hono<HonoEnv>().basePath("/api/posts");
 
 const router = app
 	.post(
-		"/",
+		"/list",
 		authMiddleware,
 		zValidator("json", createPostSchema),
 		async (c) => {
@@ -42,7 +42,7 @@ const router = app
 			}
 		},
 	)
-	.get("/", async (c) => {
+	.get("/list", async (c) => {
 		try {
 			const posts = await prisma.post.findMany({
 				orderBy: {
