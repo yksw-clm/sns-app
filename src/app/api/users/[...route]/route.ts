@@ -10,9 +10,9 @@ const prisma = new PrismaClient();
 const app = new Hono<HonoEnv>().basePath("/api/users");
 
 const router = app
-	.get("/profile", authMiddleware, (c) => {
+	.get("/profile", authMiddleware, async (c) => {
 		const userId = c.get("userId");
-		const user = prisma.user.findUnique({
+		const user = await prisma.user.findUnique({
 			where: { id: userId },
 			select: { id: true, name: true, bio: true, image: true },
 		});
@@ -20,6 +20,7 @@ const router = app
 		if (!user) {
 			return c.json({ error: "ユーザーが見つかりません" }, 404);
 		}
+
 		return c.json(user, 200);
 	})
 	.put(
