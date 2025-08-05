@@ -1,19 +1,10 @@
 import { authMiddleware } from "@/lib/authMiddleware";
 import type { HonoEnv } from "@/lib/hono";
+import { updateProfileSchema } from "@/lib/schemas/user";
 import { zValidator } from "@hono/zod-validator";
 import { PrismaClient } from "@prisma/client";
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
-import z from "zod";
-
-const updateProfleSchema = z.object({
-	name: z
-		.string({ error: "名前は必須です" })
-		.min(1, "名前は必須です")
-		.max(20, "名前は20文字以下で入力してください"),
-	bio: z.string().max(160).optional(),
-	image: z.url().optional(),
-});
 
 const prisma = new PrismaClient();
 const app = new Hono<HonoEnv>().basePath("/api/users");
@@ -34,7 +25,7 @@ const router = app
 	.put(
 		"/profile",
 		authMiddleware,
-		zValidator("json", updateProfleSchema),
+		zValidator("json", updateProfileSchema),
 		async (c) => {
 			const userId = c.get("userId");
 			const data = c.req.valid("json");
