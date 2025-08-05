@@ -1,30 +1,23 @@
-import { Hono } from "hono";
-import { handle } from "hono/vercel";
 import { put } from "@vercel/blob";
-import { NextResponse } from "next/server";
-import { authMiddleware } from "@/lib/authMiddleware";
-
-// Honoアプリケーションのインスタンスを作成
-const app = new Hono().basePath("/api/avatar");
+import { type NextRequest, NextResponse } from "next/server";
 
 // ファイルアップロードのルートを定義
-app.post("/upload", authMiddleware, async (c) => {
-	const request = c.req.raw; // 元のRequestオブジェクトを取得
+export const POST = async (request: NextRequest) => {
 	const { searchParams } = new URL(request.url);
 	const filename = searchParams.get("filename");
 
 	if (!filename || !request.body) {
-		return c.json({ message: "No file to upload." }, 400);
+		return NextResponse.json(
+			{ message: "No file to upload." },
+			{ status: 400 },
+		);
 	}
 
 	// Vercel Blobにファイルをアップロード
 	const blob = await put(filename, request.body, {
 		access: "public",
+		allowOverwrite: true,
 	});
-
-	// NextResponseを使ってJSONレスポンスを返す
+	// JSONレスポンスを返す
 	return NextResponse.json(blob);
-});
-
-export const POST = handle(app);
-export type AvatarRoutes = typeof app;
+};
