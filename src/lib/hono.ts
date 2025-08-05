@@ -16,10 +16,6 @@ export const client = hc<
 >("/");
 
 export type HonoEnv = {
-	Bindings: {
-		ACCESS_TOKEN_SECRET: string;
-		REFRESH_TOKEN_SECRET: string;
-	};
 	Variables: {
 		userId: string;
 	};

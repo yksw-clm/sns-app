@@ -3,6 +3,9 @@ import { createMiddleware } from "hono/factory";
 import { verify } from "hono/jwt";
 import type { HonoEnv } from "./hono";
 
+const ACCESS_TOKEN_SECRET =
+	process.env.ACCESS_TOKEN_SECRET || "default_access_token_secret";
+
 export const authMiddleware = createMiddleware<HonoEnv>(async (c, next) => {
 	const accessToken = getCookie(c, "access_token");
 	if (!accessToken) {
@@ -10,7 +13,7 @@ export const authMiddleware = createMiddleware<HonoEnv>(async (c, next) => {
 	}
 
 	try {
-		const decoded = await verify(accessToken, c.env.ACCESS_TOKEN_SECRET);
+		const decoded = await verify(accessToken, ACCESS_TOKEN_SECRET);
 		if (!decoded || !decoded.sub) {
 			return c.json({ error: "認証が無効です" }, 401);
 		}

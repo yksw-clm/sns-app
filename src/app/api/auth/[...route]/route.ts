@@ -8,6 +8,11 @@ import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import { handle } from "hono/vercel";
 import type { HonoEnv } from "@/lib/hono";
 
+const ACCESS_TOKEN_SECRET =
+	process.env.ACCESS_TOKEN_SECRET || "default_access_token_secret";
+const REFRESH_TOKEN_SECRET =
+	process.env.REFRESH_TOKEN_SECRET || "default_refresh_token_secret";
+
 const prisma = new PrismaClient();
 const app = new Hono<HonoEnv>().basePath("/api/auth");
 
@@ -25,11 +30,11 @@ const setTokenCookie = async (c: Context, user: User) => {
 	};
 	const accesstoken = await sign(
 		{ ...payload, exp: payload.iat + 60 * 15 },
-		c.env.ACCESS_TOKEN_SECRET,
+		ACCESS_TOKEN_SECRET,
 	);
 	const refreshToken = await sign(
 		{ ...payload, exp: payload.iat + 60 * 60 * 24 * 7 },
-		c.env.REFRESH_TOKEN_SECRET,
+		REFRESH_TOKEN_SECRET,
 	);
 	setCookie(c, "access_token", accesstoken, {
 		...cookieOptions,
@@ -63,7 +68,7 @@ const router = app
 			});
 
 			// JWTトークンを生成してクッキーに設定
-			setTokenCookie(c, newUser);
+			await setTokenCookie(c, newUser);
 
 			return c.json(
 				{
@@ -101,7 +106,7 @@ const router = app
 			}
 
 			// JWTトークンを生成してクッキーに設定
-			setTokenCookie(c, user);
+			await setTokenCookie(c, user);
 
 			return c.json(
 				{
@@ -125,7 +130,7 @@ const router = app
 
 		try {
 			// トークンを検証
-			const decoded = await verify(refreshToken, c.env.REFRESH_TOKEN_SECRET);
+			const decoded = await verify(refreshToken, REFRESH_TOKEN_SECRET);
 			if (!decoded || !decoded.sub) {
 				return c.json({ error: "認証が無効です" }, 401);
 			}
@@ -136,7 +141,7 @@ const router = app
 				iat: Math.floor(Date.now() / 1000),
 				exp: Math.floor(Date.now() / 1000) + 60 * 15,
 			};
-			const newAccessToken = await sign(payload, c.env.ACCESS_TOKEN_SECRET);
+			const newAccessToken = await sign(payload, ACCESS_TOKEN_SECRET);
 
 			// 新しいアクセストークンをクッキーに設定
 			setCookie(c, "access_token", newAccessToken, {
