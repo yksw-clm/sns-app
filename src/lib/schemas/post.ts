@@ -8,3 +8,21 @@ export const createPostSchema = z.object({
 	imageUrl: z.url("画像のURL形式が正しくありません").optional(),
 });
 export type CreatePostSchema = z.infer<typeof createPostSchema>;
+
+export type Post = {
+	_count: {
+		comments: number;
+		likes: number;
+	};
+	author: {
+		name: string;
+		id: string;
+		image: string | null;
+	};
+	content: string;
+	imageUrl: string | null;
+	id: string;
+	createdAt: string;
+	updatedAt: string;
+	authorId: string;
+};
