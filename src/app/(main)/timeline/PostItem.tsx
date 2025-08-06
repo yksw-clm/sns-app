@@ -13,9 +13,11 @@ export function PostItem({ post }: { post: Post }) {
 			<CardHeader>
 				<div className="flex items-center space-x-4">
 					<Image
-						src={post.author.image ?? "/placeholder.svg"}
+						src={post.author.image ?? "/default-avatar.svg"}
 						alt="プロフィール画像"
 						className="h-10 w-10 rounded-full"
+						width={40}
+						height={40}
 					/>
 					<div>
 						<p className="font-bold">{post.author.name}</p>

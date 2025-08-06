@@ -18,14 +18,17 @@ export default function TimelinePage() {
 			return await res.json();
 		},
 	);
-	const { data: posts, error: postsError } = useSWR("/api/posts/", async () => {
-		const res = await client.api.posts.list.$get();
-		if (!res.ok) {
-			throw new Error("投稿の取得に失敗しました");
-		}
-		const posts: Post[] = await res.json();
-		return posts;
-	});
+	const { data: posts, error: postsError } = useSWR(
+		"/api/posts/list",
+		async () => {
+			const res = await client.api.posts.list.$get();
+			if (!res.ok) {
+				throw new Error("投稿の取得に失敗しました");
+			}
+			const posts: Post[] = await res.json();
+			return posts;
+		},
+	);
 
 	if (userError || postsError) {
 		return <div>エラーが発生しました</div>;
