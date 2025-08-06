@@ -21,7 +21,6 @@ export function CreatePostForm() {
 		resolver: zodResolver(createPostSchema),
 		defaultValues: {
 			content: "",
-			imageUrl: "",
 		},
 	});
 
@@ -76,20 +75,11 @@ export function CreatePostForm() {
 					)}
 				/>
 				<div className="flex items-center justify-between">
-					<FormField
-						control={form.control}
-						name="imageUrl"
-						render={({ field }) => (
-							<FormItem>
-								<Input
-									type="file"
-									accept="image/*"
-									className="max-w-xs"
-									{...field}
-								/>
-								<FormMessage />
-							</FormItem>
-						)}
+					<Input
+						type="file"
+						accept="image/*"
+						className="max-w-xs"
+						onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
 					/>
 					<Button type="submit">投稿する</Button>
 				</div>
