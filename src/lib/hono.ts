@@ -4,15 +4,9 @@ import type { PostRoutes } from "@/app/api/posts/[...route]/route";
 import type { CommentRoutes } from "@/app/api/comments/[...route]/route";
 import type { UserRoutes } from "@/app/api/users/[...route]/route";
 import type { LikeRoutes } from "@/app/api/likes/[...route]/route";
-import type { AvatarRoutes } from "@/app/api/avatar/upload/route";
 
 export const client = hc<
-	| AuthRoutes
-	| UserRoutes
-	| PostRoutes
-	| CommentRoutes
-	| LikeRoutes
-	| AvatarRoutes
+	AuthRoutes | UserRoutes | PostRoutes | CommentRoutes | LikeRoutes
 >("/");
 
 export type HonoEnv = {
