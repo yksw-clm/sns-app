@@ -11,7 +11,7 @@ const app = new Hono<HonoEnv>().basePath("/api/comments");
 
 const router = app
 	.post(
-		"/",
+		"/comment",
 		authMiddleware,
 		zValidator("json", createCommentSchema),
 		async (c) => {
