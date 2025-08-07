@@ -2,6 +2,7 @@
 
 import { client } from "@/lib/hono";
 import Image from "next/image";
+import Link from "next/link";
 import useSWR from "swr";
 
 export function CommentList({ postId }: { postId: string }) {
@@ -23,16 +24,20 @@ export function CommentList({ postId }: { postId: string }) {
 		<div className="mt-4 space-y-4">
 			{comments?.map((comment) => (
 				<div key={comment.id} className="flex items-start space-x-4">
-					<Image
-						src={comment.author.image ?? "/default-avatar.svg"}
-						alt="プロフィール画像"
-						className="h-8 w-8 rounded-full"
-						width={32}
-						height={32}
-					/>
+					<Link href={`/profile/${comment.author.id}`}>
+						<Image
+							src={comment.author.image ?? "/default-avatar.svg"}
+							alt="プロフィール画像"
+							className="h-8 w-8 rounded-full"
+							width={32}
+							height={32}
+						/>
+					</Link>
 					<div className="flex-1">
 						<div className="flex items-center gap-2">
-							<p className="font-bold">{comment.author.name}</p>
+							<Link href={`/profile/${comment.author.id}`}>
+								<p className="font-bold">{comment.author.name}</p>
+							</Link>
 							<p className="text-sm text-gray-500">
 								{new Date(comment.createdAt).toLocaleString()}
 							</p>

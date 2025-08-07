@@ -67,7 +67,7 @@ export default function EditProfilePage() {
 				return;
 			}
 			toast.success("プロフィールが更新されました。");
-			router.push("/profile");
+			router.push("/timeline");
 		} catch (error) {
 			console.error("プロフィールの更新中にエラーが発生:", error);
 			toast.error("プロフィールの更新に失敗しました。もう一度お試しください。");

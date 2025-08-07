@@ -2,6 +2,7 @@
 
 import { client } from "@/lib/hono";
 import Image from "next/image";
+import Link from "next/link";
 import useSWR from "swr";
 import { CreatePostForm } from "./CreatePostForm";
 import type { Post } from "@/lib/schemas/post";
@@ -41,15 +42,19 @@ export default function TimelinePage() {
 	return (
 		<div className="container mx-auto max-w-2xl">
 			<header className="flex items-center space-x-4 p-4">
-				<Image
-					src={user.image || "/default-avatar.svg"}
-					alt="プロフィール画像"
-					className="h-12 w-12 rounded-full"
-					width={48}
-					height={48}
-				/>
+				<Link href={`/profile/${user.id}`}>
+					<Image
+						src={user.image || "/default-avatar.svg"}
+						alt="プロフィール画像"
+						className="h-12 w-12 rounded-full"
+						width={48}
+						height={48}
+					/>
+				</Link>
 				<div>
-					<h1 className="text-xl font-bold">{user.name}</h1>
+					<Link href={`/profile/${user.id}`}>
+						<h1 className="text-xl font-bold">{user.name}</h1>
+					</Link>
 					<p className="text-sm text-gray-500">{user.bio}</p>
 				</div>
 			</header>

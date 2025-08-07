@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/card";
 import type { Post } from "@/lib/schemas/post";
 import Image from "next/image";
+import Link from "next/link";
 import { LikeButton } from "./LikeButton";
 import { CommentList } from "./CommentList";
 import { CommentForm } from "./CommentForm";
@@ -15,15 +16,19 @@ export function PostItem({ post }: { post: Post }) {
 		<Card>
 			<CardHeader>
 				<div className="flex items-center space-x-4">
-					<Image
-						src={post.author.image ?? "/default-avatar.svg"}
-						alt="プロフィール画像"
-						className="h-10 w-10 rounded-full"
-						width={40}
-						height={40}
-					/>
+					<Link href={`/profile/${post.author.id}`}>
+						<Image
+							src={post.author.image ?? "/default-avatar.svg"}
+							alt="プロフィール画像"
+							className="h-10 w-10 rounded-full"
+							width={40}
+							height={40}
+						/>
+					</Link>
 					<div>
-						<p className="font-bold">{post.author.name}</p>
+						<Link href={`/profile/${post.author.id}`}>
+							<p className="font-bold">{post.author.name}</p>
+						</Link>
 						<p className="text-sm text-gray-500">
 							{new Date(post.createdAt).toLocaleString()}
 						</p>
