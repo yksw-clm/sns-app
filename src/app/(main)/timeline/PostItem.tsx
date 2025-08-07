@@ -6,6 +6,9 @@ import {
 } from "@/components/ui/card";
 import type { Post } from "@/lib/schemas/post";
 import Image from "next/image";
+import { LikeButton } from "./LikeButton";
+import { CommentList } from "./CommentList";
+import { CommentForm } from "./CommentForm";
 
 export function PostItem({ post }: { post: Post }) {
 	return (
@@ -40,11 +43,11 @@ export function PostItem({ post }: { post: Post }) {
 				)}
 			</CardContent>
 			<CardFooter className="flex justify-between">
-				{/* <LikeButton postId={post.id} initialLikes={post._count.likes} />
+				<LikeButton postId={post.id} initialLikes={post._count.likes} />
 				<div className="flex-grow">
 					<CommentForm postId={post.id} />
 					<CommentList postId={post.id} />
-				</div> */}
+				</div>
 			</CardFooter>
 		</Card>
 	);
