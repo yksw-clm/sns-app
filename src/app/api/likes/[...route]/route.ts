@@ -10,7 +10,30 @@ const prisma = new PrismaClient();
 const app = new Hono<HonoEnv>().basePath("/api/likes");
 
 const router = app
-	.post("/", authMiddleware, zValidator("json", likeSchema), async (c) => {
+	.get("/like", authMiddleware, async (c) => {
+		const userId = c.get("userId");
+		const postId = c.req.query("postId");
+
+		if (!postId) {
+			return c.json({ error: "投稿IDが必要です" }, 400);
+		}
+
+		try {
+			const like = await prisma.like.findUnique({
+				where: {
+					userId_postId: {
+						userId,
+						postId,
+					},
+				},
+			});
+			return c.json({ liked: !!like });
+		} catch (error) {
+			console.error("いいねの状態取得中にエラーが発生:", error);
+			return c.json({ error: "いいねの状態取得に失敗しました" }, 500);
+		}
+	})
+	.post("/like", authMiddleware, zValidator("json", likeSchema), async (c) => {
 		const userId = c.get("userId");
 		const { postId } = c.req.valid("json");
 
@@ -37,30 +60,36 @@ const router = app
 			return c.json({ error: "いいねの作成に失敗しました" }, 500);
 		}
 	})
-	.delete("/", authMiddleware, zValidator("json", likeSchema), async (c) => {
-		const userId = c.get("userId");
-		const { postId } = c.req.valid("json");
+	.delete(
+		"/like",
+		authMiddleware,
+		zValidator("json", likeSchema),
+		async (c) => {
+			const userId = c.get("userId");
+			const { postId } = c.req.valid("json");
 
-		try {
-			await prisma.like.delete({
-				where: {
-					userId_postId: {
-						userId,
-						postId,
+			try {
+				await prisma.like.delete({
+					where: {
+						userId_postId: {
+							userId,
+							postId,
+						},
 					},
-				},
-			});
+				});
 
-			return c.json({ message: "いいねを取り消しました" }, 200);
-		} catch (error) {
-			if (error instanceof Error && error.message.includes("P2025")) {
-				return c.json({ error: "指定された投稿にいいねが存在しません" }, 404);
+				return c.json({ message: "いいねを取り消しました" }, 200);
+			} catch (error) {
+				if (error instanceof Error && error.message.includes("P2025")) {
+					return c.json({ error: "指定された投稿にいいねが存在しません" }, 404);
+				}
+				console.error("いいねの削除中にエラーが発生:", error);
+				return c.json({ error: "いいねの削除に失敗しました" }, 500);
 			}
-			console.error("いいねの削除中にエラーが発生:", error);
-			return c.json({ error: "いいねの削除に失敗しました" }, 500);
-		}
-	});
+		},
+	);
 
+export const GET = handle(router);
 export const POST = handle(router);
 export const DELETE = handle(router);
 export type LikeRoutes = typeof router;
